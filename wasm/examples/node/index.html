@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Button Click</title>
+</head>
+<body>
+  <button id="myButton">Click Me</button>
+
+  <script>
+    // 获取按钮元素
+    var button = document.getElementById("myButton");
+
+    // 按钮点击事件处理函数
+    function handleClick() {
+      var script = document.createElement("script");
+      script.src = "dist/main.js";
+      document.body.appendChild(script);
+    }
+
+    // 绑定按钮点击事件
+    button.addEventListener("click", handleClick);
+  </script>
+</body>
+</html>

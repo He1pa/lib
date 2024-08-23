@@ -1,5 +1,5 @@
-import WASI from "wasi-js";
-import wasiBindings from "wasi-js/dist/bindings/node";
+import WASI, { createFileSystem } from "wasi-js";
+import browserBindings from "wasi-js/dist/bindings/browser";
 import { resolve } from "path";
 
 const RUN_FUNCTION_NAME = "kcl_run";
@@ -59,9 +59,13 @@ export interface RunOptions {
  * @param options
  * @returns
  */
-export async function load(opts?: KCLWasmLoadOptions) {
+export async function load(files: Map<string, string>, opts?: KCLWasmLoadOptions) {
   const options = opts ?? {};
-  const fs: typeof import("fs") = options.fs ?? require("fs");
+  // const fs: typeof import("fs") = options.fs ?? require("fs");
+  const fs = createFileSystem([{
+    type: "mem",
+    contents: Object.fromEntries(files),
+}]);
 
   let preopens: Record<string, string> = {};
 
@@ -77,15 +81,16 @@ export async function load(opts?: KCLWasmLoadOptions) {
 
   // check if running in browser
   const bindings = {
-    ...wasiBindings,
+    ...browserBindings,
     fs,
+    // hrtime: (...args): bigint => BigInt(browserBindings.hrtime(...args)),
   };
 
   const wasi = new WASI({
     bindings,
     env: {
-      ...process.env,
-      ...(options.env ?? {}),
+      // ...process.env,
+      // ...(options.env ?? {}),
     },
     preopens,
   });
